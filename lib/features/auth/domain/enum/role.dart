@@ -1,0 +1,4 @@
+enum ERole {
+  admin,
+  employee,
+}
