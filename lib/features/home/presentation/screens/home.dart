@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldWrapper(
+    return DecorationWrapper(
       appBar: SizedBox(
         width: double.infinity,
         child: Padding(

@@ -1,4 +1,5 @@
 import 'package:employees_today/core/configs/theme/app_themes.dart';
+import 'package:employees_today/core/cubits/cubit/layout_cubit.dart';
 import 'package:employees_today/core/widgets/loading_screen.dart';
 import 'package:employees_today/dependency_injection.dart';
 import 'package:employees_today/features/auth/domain/repositories/auth_repository.dart';
@@ -11,8 +12,15 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthBloc(sl<AuthRepository>()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthBloc(sl<AuthRepository>()),
+        ),
+        BlocProvider(
+          create: (context) => LayoutCubit(),
+        ),
+      ],
       child: MaterialApp(
         theme: AppThemes.primaryTheme,
         debugShowCheckedModeBanner: false,
