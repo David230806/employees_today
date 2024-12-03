@@ -1,8 +1,11 @@
 import 'package:employees_today/core/configs/theme/app_colors.dart';
+import 'package:employees_today/features/home/domain/enum/working_status.dart';
 import 'package:flutter/material.dart';
 
 class StartWorkButton extends StatefulWidget {
-  const StartWorkButton({super.key});
+  const StartWorkButton({super.key, required this.status});
+
+  final EWorkingStatus status;
 
   @override
   State<StartWorkButton> createState() => _StartWorkButtonState();
@@ -17,7 +20,7 @@ class _StartWorkButtonState extends State<StartWorkButton> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: AppColors.assent,
+          color: widget.status == EWorkingStatus.online ? AppColors.assent : AppColors.grey,
           width: 4,
         ),
       ),

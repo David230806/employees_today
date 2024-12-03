@@ -1,0 +1,4 @@
+enum EWorkingStatus {
+  online,
+  offline,
+}

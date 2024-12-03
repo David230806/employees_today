@@ -2,6 +2,7 @@ import 'package:employees_today/core/configs/theme/app_colors.dart';
 import 'package:employees_today/core/widgets/layout/layout.dart';
 import 'package:employees_today/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:employees_today/features/auth/presentation/screens/auth.dart';
+import 'package:employees_today/features/home/presentation/bloc/realtime_workday/realtime_workday_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,6 +15,7 @@ class LoadingScreen extends StatelessWidget {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is SignInSuccessState) {
+            context.read<RealtimeWorkdayBloc>().setUserId(state.user.id);
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const Layout(),

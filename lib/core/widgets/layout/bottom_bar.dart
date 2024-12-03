@@ -29,9 +29,9 @@ class CustomNavigationBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildNavItem(context, Iconsax.home, "Home", true, 0),
-          _buildNavItem(context, Iconsax.story, "History", false, 1),
-          _buildNavItem(context, Iconsax.user, "Profile", false, 2),
+          _buildNavItem(context, Iconsax.home, "Главная", true, 0),
+          _buildNavItem(context, Iconsax.story, "История", false, 1),
+          _buildNavItem(context, Iconsax.user, "Профиль", false, 2),
         ],
       ),
     );

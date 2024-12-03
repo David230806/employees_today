@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:employees_today/core/common/helpers/month_title.dart';
 import 'package:employees_today/core/common/helpers/week_day_title.dart';
 import 'package:employees_today/core/configs/theme/app_colors.dart';
@@ -5,10 +7,16 @@ import 'package:employees_today/core/widgets/charts/bar_chart.dart';
 import 'package:employees_today/core/widgets/charts/pie_chart.dart';
 import 'package:employees_today/core/widgets/scaffold_wrapper.dart';
 import 'package:employees_today/features/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:employees_today/features/home/data/models/workday.dart';
+import 'package:employees_today/features/home/domain/entity/realtime_workday.dart';
+import 'package:employees_today/features/home/domain/enum/working_status.dart';
+import 'package:employees_today/features/home/presentation/bloc/realtime_workday/realtime_workday_bloc.dart';
+import 'package:employees_today/features/home/presentation/bloc/workday/workday_bloc.dart';
 import 'package:employees_today/features/home/presentation/widgets/start_work_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:uuid/uuid.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -77,11 +85,31 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              _buildStartWorkContainer(),
-              const SizedBox(
-                height: 10,
+              BlocBuilder<RealtimeWorkdayBloc, RealtimeWorkdayState>(
+                builder: (context, state) {
+                  if (state is RealtimeWorkdaySuccess) {
+                    return Column(
+                      children: [
+                        _buildStartWorkContainer(state.realtimeWorkday, context),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        _buildTimeStatContainer(state.realtimeWorkday),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      _buildStartWorkContainer(null, context),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      _buildTimeStatContainer(null),
+                    ],
+                  );
+                },
               ),
-              _buildTimeStatContainer(),
               const SizedBox(
                 height: 30,
               ),
@@ -218,7 +246,27 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeStatContainer() {
+  Widget _buildTimeStatContainer(RealtimeWorkdayEntity? workday) {
+    Duration? getDifferenceStartAndEnd() {
+      if (workday == null || workday.dateStart == null) {
+        return null;
+      }
+
+      if (workday.dateEnd == null) {
+        return DateTime.now().difference(workday.dateStart!);
+      }
+
+      return workday.dateEnd!.difference(workday.dateStart!);
+    }
+
+    String addZeroToDate(int num) {
+      if (num < 10) {
+        return "0$num";
+      }
+
+      return num.toString();
+    }
+
     return Container(
       width: double.infinity,
       height: 120,
@@ -230,21 +278,23 @@ class HomeScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Column(
+          Column(
             children: [
-              Icon(
+              const Icon(
                 Icons.timelapse_rounded,
                 color: Colors.teal,
               ),
               Text(
-                "09:00",
-                style: TextStyle(
+                workday?.dateStart != null
+                    ? "${addZeroToDate(workday!.dateStart!.hour)}:${addZeroToDate(workday.dateStart!.minute)}"
+                    : "--:--",
+                style: const TextStyle(
                   fontSize: 20,
                   color: AppColors.text,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Text(
+              const Text(
                 "Прибытие",
                 style: TextStyle(
                   fontSize: 14,
@@ -260,9 +310,11 @@ class HomeScreen extends StatelessWidget {
                 Icons.av_timer_rounded,
                 color: Colors.amber.shade600,
               ),
-              const Text(
-                "18:00",
-                style: TextStyle(
+              Text(
+                workday?.dateEnd != null
+                    ? "${addZeroToDate(workday!.dateStart!.hour)}:${addZeroToDate(workday.dateStart!.minute)}"
+                    : "--:--",
+                style: const TextStyle(
                   fontSize: 20,
                   color: AppColors.text,
                   fontWeight: FontWeight.w600,
@@ -278,22 +330,24 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          const Column(
+          Column(
             children: [
-              Icon(
+              const Icon(
                 Icons.access_time_rounded,
                 color: AppColors.assent,
               ),
               Text(
-                "08:00",
-                style: TextStyle(
+                getDifferenceStartAndEnd() != null
+                    ? "${addZeroToDate(getDifferenceStartAndEnd()!.inHours % 24)}:${addZeroToDate(getDifferenceStartAndEnd()!.inMinutes % 60)}"
+                    : "--:--",
+                style: const TextStyle(
                   fontSize: 20,
                   color: AppColors.text,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Text(
-                "Рабочии часы",
+              const Text(
+                "Рабочие часы",
                 style: TextStyle(
                   fontSize: 14,
                   color: AppColors.text,
@@ -307,7 +361,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStartWorkContainer() {
+  Widget _buildStartWorkContainer(RealtimeWorkdayEntity? workday, BuildContext context) {
     return Container(
       width: double.infinity,
       height: 400,
@@ -335,21 +389,51 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          const StartWorkButton(),
+          BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              final userId = state is SignInSuccessState ? state.user.id : "";
+
+              return GestureDetector(
+                onTap: () {
+                  log("USERID: $userId");
+
+                  if (workday != null && workday.status == EWorkingStatus.offline) {
+                    context
+                        .read<WorkdayBloc>()
+                        .add(StartWorkdayEvent(dateStart: DateTime.now(), userId: userId));
+                  } else {
+                    context.read<WorkdayBloc>().add(
+                          FinishWorkdayEvent(
+                            workday: WorkdayModel(
+                              id: const Uuid().v4(),
+                              employeeId: userId,
+                              startDate: workday!.dateStart,
+                              endDate: DateTime.now(),
+                            ),
+                          ),
+                        );
+                  }
+                },
+                child: StartWorkButton(
+                  status: workday?.status ?? EWorkingStatus.offline,
+                ),
+              );
+            },
+          ),
           const Spacer(),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Iconsax.location,
                 color: AppColors.text,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Text(
-                "Локация: Не в офисе",
-                style: TextStyle(
+                "Локация: ${workday != null && workday.status == EWorkingStatus.online ? "На работе" : "Не на работе"}",
+                style: const TextStyle(
                   color: AppColors.text,
                 ),
               )

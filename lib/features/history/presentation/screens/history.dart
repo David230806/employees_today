@@ -8,21 +8,31 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DecorationWrapper(
-      child: Column(
-        children: [
-          Text(
-            'История',
-            style: TextStyle(
-              color: AppColors.text,
-              fontSize: 26,
-            ),
+    return DecorationWrapper(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 40.0,
+          right: 20,
+          left: 20,
+        ),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: const Column(
+            children: [
+              Text(
+                'История',
+                style: TextStyle(
+                  color: AppColors.text,
+                  fontSize: 26,
+                ),
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              Calendar(),
+            ],
           ),
-          SizedBox(
-            height: 40,
-          ),
-          Calendar(),
-        ],
+        ),
       ),
     );
   }

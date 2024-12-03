@@ -16,10 +16,10 @@ class Layout extends StatelessWidget {
         children: [
           IndexedStack(
             index: context.watch<LayoutCubit>().state,
-            children: const [
+            children: [
               HomeScreen(),
-              HistoryScreen(),
-              ProfileScreen(),
+              const HistoryScreen(),
+              const ProfileScreen(),
             ],
           ),
           const Positioned(

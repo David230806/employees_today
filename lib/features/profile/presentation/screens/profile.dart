@@ -11,78 +11,81 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecorationWrapper(
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.8),
-              borderRadius: const BorderRadius.only(
-                bottomRight: Radius.circular(30),
-                bottomLeft: Radius.circular(30),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 200,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.8),
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(30),
+                  bottomLeft: Radius.circular(30),
+                ),
+              ),
+              child: Center(
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is SignInSuccessState) {
+                      return Text(
+                        state.user.name + state.user.surname,
+                        style: const TextStyle(
+                          color: AppColors.text,
+                          fontSize: 24,
+                        ),
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                ),
               ),
             ),
-            child: Center(
-              child: BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  if (state is SignInSuccessState) {
-                    return Text(
-                      state.user.name + state.user.surname,
-                      style: const TextStyle(
-                        color: AppColors.text,
-                        fontSize: 24,
-                      ),
-                    );
-                  }
-                  return const SizedBox();
-                },
+            const SizedBox(
+              height: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+              ),
+              child: Column(
+                children: [
+                  _buildSettingsCard(
+                    const Icon(
+                      Iconsax.user,
+                      color: AppColors.text,
+                    ),
+                    "Профиль",
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  _buildSettingsCard(
+                    const Icon(
+                      Iconsax.money,
+                      color: AppColors.text,
+                    ),
+                    "Зарплата",
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  _buildSettingsCard(
+                    const Icon(
+                      Iconsax.chart,
+                      color: AppColors.text,
+                    ),
+                    "Статистика",
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
               ),
             ),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-            ),
-            child: Column(
-              children: [
-                _buildSettingsCard(
-                  const Icon(
-                    Iconsax.user,
-                    color: AppColors.text,
-                  ),
-                  "Профиль",
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                _buildSettingsCard(
-                  const Icon(
-                    Iconsax.money,
-                    color: AppColors.text,
-                  ),
-                  "Зарплата",
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                _buildSettingsCard(
-                  const Icon(
-                    Iconsax.chart,
-                    color: AppColors.text,
-                  ),
-                  "Статистика",
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
