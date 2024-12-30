@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:employees_today/features/auth/data/models/user.dart';
 import 'package:employees_today/features/auth/domain/entities/user.dart';
@@ -12,8 +10,6 @@ class AuthRepositoryImpl extends AuthRepository {
     final firebaseInstance = FirebaseAuth.instance;
 
     try {
-      log("VerificationId: $verificationId");
-
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
         smsCode: otpCode,

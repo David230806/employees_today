@@ -1,3 +1,4 @@
+import 'package:employees_today/features/home/data/models/report.dart';
 import 'package:employees_today/features/home/domain/entity/workday.dart';
 
 class WorkdayModel extends WorkdayEntity {
@@ -6,6 +7,7 @@ class WorkdayModel extends WorkdayEntity {
     required super.employeeId,
     required super.startDate,
     required super.endDate,
+    required super.report,
   });
 
   factory WorkdayModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +16,7 @@ class WorkdayModel extends WorkdayEntity {
       employeeId: json['employeeId'],
       startDate: json['startDate'],
       endDate: json['endDate'],
+      report: ReportModel.fromJson(json['report'] as Map<String, dynamic>),
     );
   }
 
@@ -23,6 +26,7 @@ class WorkdayModel extends WorkdayEntity {
       "employeeid": employeeId,
       "startDate": startDate.toString(),
       "endDate": endDate.toString(),
+      "report": report.toJson(),
     };
   }
 }

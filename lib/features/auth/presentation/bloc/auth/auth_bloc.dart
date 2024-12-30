@@ -17,8 +17,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc(this._repository) : super(AuthInitial()) {
     FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-      log("User cubit has started his work: $user");
-
       if (user != null) {
         final userSnapshot =
             await FirebaseFirestore.instance.collection("users").doc(user.uid).get();
@@ -57,7 +55,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (!completer.isCompleted) completer.complete();
       },
       codeSent: (verificationId, forceResendingToken) {
-        log("Code sent: $verificationId");
         emit(VerifyNumberSuccessState(verificationId: verificationId));
       },
       codeAutoRetrievalTimeout: (verificationId) {

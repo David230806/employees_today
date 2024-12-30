@@ -6,7 +6,7 @@ sealed class RealtimeWorkdayState {}
 final class RealtimeWorkdayInitial extends RealtimeWorkdayState {}
 final class RealtimeWorkdayLoading extends RealtimeWorkdayState {}
 final class RealtimeWorkdaySuccess extends RealtimeWorkdayState {
-  final RealtimeWorkdayEntity realtimeWorkday;
+  final RealtimeWorkdayModel realtimeWorkday;
 
   RealtimeWorkdaySuccess({required this.realtimeWorkday});
 }

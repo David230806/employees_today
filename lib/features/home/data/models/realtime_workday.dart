@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:employees_today/features/home/domain/entity/realtime_workday.dart';
 import 'package:employees_today/features/home/domain/enum/working_status.dart';
 
@@ -11,12 +9,6 @@ class RealtimeWorkdayModel extends RealtimeWorkdayEntity {
   });
 
   factory RealtimeWorkdayModel.fromJson(Map<String, dynamic> json) {
-    log("""RealtimeWorkDay {
-      status: ${json['status']},
-      dateStart: ${json['dateStart']},
-      dateEnd: ${json['dateEnd']},
-    }""");
-
     return RealtimeWorkdayModel(
       status: EWorkingStatus.values.byName(json['status']),
       dateStart: json['dateStart'] == "null" ? null : DateTime.parse(json['dateStart']),
@@ -31,4 +23,7 @@ class RealtimeWorkdayModel extends RealtimeWorkdayEntity {
       "dateEnd": dateEnd.toString(),
     };
   }
+
+  bool get isWorkdayEnded =>
+      dateEnd != null && dateEnd!.isAfter(DateTime.now().subtract(const Duration(days: 1)));
 }

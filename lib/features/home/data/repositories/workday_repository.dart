@@ -25,8 +25,22 @@ class WorkdayRepositoryImpl extends WorkdayRepository {
   }
 
   @override
-  Future<Either<String, List<WorkdayEntity>>> getWorkdaysByUser(String userId) {
-    // TODO: implement getWorkdaysByUser
-    throw UnimplementedError();
+  Future<Either<String, List<WorkdayEntity>>> getWorkdaysByUser(
+    String userId,
+    DateTime date,
+  ) async {
+    try {
+      final data = await storage
+          .collection('workdays')
+          .where('employeeId', isEqualTo: userId)
+          .get();
+
+      final List<WorkdayEntity> workdays =
+          data.docs.map((doc) => WorkdayModel.fromJson(doc.data())).toList();
+
+      return Right(workdays);
+    } catch (e) {
+      return Left(e.toString());
+    }
   }
 }

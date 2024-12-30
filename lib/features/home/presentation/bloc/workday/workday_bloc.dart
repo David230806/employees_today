@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:employees_today/features/home/data/models/workday.dart';
@@ -43,17 +45,10 @@ class WorkdayBloc extends Bloc<WorkdayEvent, WorkdayState> {
 
     res.fold(
       (l) {
+        log(l);
         emit(WorkdayErrorState(message: l));
       },
       (r) async {
-        final realtimeDatabaseRef = realtimeDatabase.ref("users/${event.workday.employeeId}");
-
-        await realtimeDatabaseRef.update({
-          "dateEnd": "null",
-          "dateStart": "null",
-          "status": "offline",
-        });
-
         emit(WorkdayFinishedState(message: r));
       },
     );

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:employees_today/core/configs/theme/app_colors.dart';
 import 'package:employees_today/core/widgets/layout/layout.dart';
 import 'package:employees_today/features/auth/presentation/bloc/auth/auth_bloc.dart';
@@ -15,6 +17,7 @@ class LoadingScreen extends StatelessWidget {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is SignInSuccessState) {
+            log("State used id: ${state.user.id}");
             context.read<RealtimeWorkdayBloc>().setUserId(state.user.id);
             Navigator.of(context).push(
               MaterialPageRoute(

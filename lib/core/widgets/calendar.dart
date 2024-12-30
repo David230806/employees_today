@@ -1,5 +1,8 @@
 import 'package:employees_today/core/configs/theme/app_colors.dart';
+import 'package:employees_today/features/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:employees_today/features/history/presentation/bloc/history/history_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calendar extends StatefulWidget {
@@ -86,13 +89,25 @@ class _CalendarState extends State<Calendar> {
       },
       calendarFormat: CalendarFormat.week,
       onDaySelected: (selectedDay, focusedDay) {
+        context.read<HistoryBloc>().add(GetWorkdayByDayEvent(date: selectedDay));
         setState(() {
           _selectedDay = selectedDay;
           _focusedDay = focusedDay;
         });
       },
       onPageChanged: (focusedDay) {
+        final weekStart = focusedDay.subtract(Duration(days: focusedDay.weekday - 1));
+        final weekEnd = weekStart.add(const Duration(days: 6));
+
         _focusedDay = focusedDay;
+
+        context.read<HistoryBloc>().add(
+              GetWorkdayByDateEvent(
+                userId: (context.read<AuthBloc>().state as SignInSuccessState).user.id,
+                dateStart: weekStart,
+                dateEnd: weekEnd,
+              ),
+            );
       },
       focusedDay: _focusedDay,
       firstDay: DateTime(2010, 1, 1),

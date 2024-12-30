@@ -4,6 +4,8 @@ import 'package:employees_today/core/widgets/loading_screen.dart';
 import 'package:employees_today/dependency_injection.dart';
 import 'package:employees_today/features/auth/domain/repositories/auth_repository.dart';
 import 'package:employees_today/features/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:employees_today/features/history/domain/repository/history_repository.dart';
+import 'package:employees_today/features/history/presentation/bloc/history/history_bloc.dart';
 import 'package:employees_today/features/home/domain/repositories/workday_repository.dart';
 import 'package:employees_today/features/home/presentation/bloc/realtime_workday/realtime_workday_bloc.dart';
 import 'package:employees_today/features/home/presentation/bloc/workday/workday_bloc.dart';
@@ -29,6 +31,9 @@ class App extends StatelessWidget {
         BlocProvider(
           create: (context) => RealtimeWorkdayBloc(),
         ),
+        BlocProvider(
+          create: (context) => HistoryBloc(sl<HistoryRepository>()),
+        )
       ],
       child: MaterialApp(
         theme: AppThemes.primaryTheme,
